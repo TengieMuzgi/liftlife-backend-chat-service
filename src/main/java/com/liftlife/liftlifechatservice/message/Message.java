@@ -1,14 +1,14 @@
 package com.liftlife.liftlifechatservice.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Message {
-    private final String sender;
-    private final String receiver;
-    private final String contents;
+    private String sender;
+    private String receiver;
+    private String contents;
 }

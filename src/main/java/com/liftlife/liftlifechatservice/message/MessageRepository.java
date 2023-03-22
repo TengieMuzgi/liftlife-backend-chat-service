@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.*;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Sinks;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -12,7 +13,13 @@ import java.io.IOException;
 @Repository
 public class MessageRepository {
     private final DatabaseReference ref;
+
+    //TODO: buffering sink because it only sends data one time
+    private final Sinks.Many<Message> sink;
+
+
     public MessageRepository() throws IOException {
+        this.sink = Sinks.many().multicast().onBackpressureBuffer();
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.getApplicationDefault())
@@ -27,11 +34,11 @@ public class MessageRepository {
 
     @PostConstruct
     private void init(){
+        ChildEventListener childEventListener = ref.addChildEventListener(new ChildEventListener() {
 
-        ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
-                System.out.println(dataSnapshot.getValue());
+                sink.tryEmitNext(dataSnapshot.getValue(Message.class));
             }
 
             @Override
@@ -49,6 +56,10 @@ public class MessageRepository {
             public void onCancelled(DatabaseError databaseError) {}
         });
 
+    }
+
+    public Sinks.Many<Message> getSink() {
+        return sink;
     }
 
     //TODO: try to make CRUD methods return something according to standards
