@@ -55,7 +55,6 @@ public class MessageRepository {
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-
     }
 
     public Sinks.Many<Message> getSink() {

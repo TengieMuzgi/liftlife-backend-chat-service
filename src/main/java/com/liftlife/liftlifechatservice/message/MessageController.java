@@ -1,6 +1,7 @@
 package com.liftlife.liftlifechatservice.message;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -18,7 +19,7 @@ public class MessageController {
         this.messageRepository = messageRepository;
     }
 
-    @GetMapping("/all")
+    @GetMapping(path = "/all")
     public Flux<Message> findAllMessages() {
         //TODO: closing-reopening stream
         return messageRepository.getSink().asFlux();
